@@ -1,6 +1,7 @@
 from geopy import distance
 import mysql.connector
 import random
+
 connection = mysql.connector.connect(
          host='127.0.0.1',
          port= 3306,
@@ -71,46 +72,66 @@ def etaisyyden_lasku(current, target):
                              (end['latitude_deg'], end['longitude_deg'])).km
 
 
-def get_nearby_airports(lentokentat, current = "EFHK"):
+def get_nearby_airports(lentokentat, current="EFHK"):
+    current_lat, current_lng = None, None
+
+    # Etsi nykyisen lentokentän koordinaatit
     for airport in lentokentat:
-        #print(airport["ident"])
         if airport["ident"] == current:
             current_lat = airport["latitude_deg"]
             current_lng = airport["longitude_deg"]
-            #print("IF")
+            current_name = airport["name"]
             break
 
+    if current_lat is None or current_lng is None:
+        raise ValueError("Nykyistä lentokenttää ei löytynyt.")
+
+    # Tulostetaan pelaajan nykyinen sijainti
+    print(f"Nykyinen sijaintisi: {current_name} ({current}), koordinaatit: {current_lat}, {current_lng}")
+
+    etaisyydet = []
+    # Laske etäisyydet muihin lentokenttiin, paitsi oma sijainti
     for details in lentokentat:
         name = details["name"]
+        ident = details["ident"]
         lat = details['latitude_deg']
         lng = details['longitude_deg']
-        #print(name, lat, lng, current_lat, current_lng)
+
+        # Skippaa nykyinen lentokenttä
+        if ident == current:
+            continue
 
         etaisyys = distance.distance((lat, lng), (current_lat, current_lng)).km
+        etaisyydet.append((etaisyys, name, ident))
 
-        if etaisyys < 200:
-            print("less than 50 km")
+    # Järjestetään etäisyydet etäisyyden mukaan nousevasti
+    etaisyydet.sort(key=lambda x: x[0])
 
-def sijainti(kilsat_pelaaja, icao, aika, game_id):
-    sql = f"UPDATE game SET location = %s, kilsat_pelaaja = %s, aika = %s WHERE id = %s"
-    cursor = connection.cursor()
-    cursor.execute(sql, (kilsat_pelaaja, icao, aika, game_id))
+    # Palautetaan viisi lähintä lentokenttää
+    return etaisyydet[:5]
 
-
-# etaisyyden_lasku()
-
+# Lentokenttätietojen haku
 lentokentat = get_airport_info()
-get_nearby_airports( lentokentat)
+
+# Tulostetaan oma sijainti ja viisi lähintä lentokenttää
+nearest_airports = get_nearby_airports(lentokentat)
+
+# Tulostetaan viisi lähintä lentokenttää
+print("\nLähimmät lentokenttävaihtoehdot:")
+for airport in nearest_airports:
+    print(f"Lentokenttä: {airport[1]} ({airport[2]}), Etäisyys: {airport[0]:.2f} km")
+
+input("Valitse yksi näistä.")
 
 
 #Sijainti
 def lentokenttien_sijainti(icao_code):
-    sql = f"SELECT lantitude_deg, longitude_deg FROM airport WHERE ident = '{icao_code}'"
+    sql = f"SELECT latitude_deg, longitude_deg FROM airport WHERE ident = '{icao_code}'"
     cursor = conn.cursor()
     cursor.execute(sql)
     result = cursor.fetchall()
     if result:
-        return {'lantitude_deg': result[0], 'longitude_deg': result[1]}
+        return {'latitude_deg': result[0], 'longitude_deg': result[1]}
     else:
         return None
 #maali lentokentät
