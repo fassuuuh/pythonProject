@@ -109,6 +109,7 @@ def peli():
     current_airport = "EFHK"  # Aloituskenttä
     visited_airports = [current_airport]  # Lista käydyistä lentokentistä
     remaining_time = 5 * 60  # Aika minuuteissa (5 tuntia)
+    kilsat_pelaaja = 1500
 
     while remaining_time > 0:
         # Näytetään pelaajalle viisi lähintä lentokenttää
@@ -139,8 +140,13 @@ def peli():
         # Päivitetään jäljellä oleva aika
         matka_aika = tunnit * 60 + minuutit
         remaining_time -= matka_aika
+        kilsat_pelaaja -= etaisyys_uuteen
 
         if remaining_time <= 0:
+            print("Aika loppui! Et ehtinyt suojapaikkaan ajoissa.")
+            break
+
+        if kilsat_pelaaja <= 0:
             print("Aika loppui! Et ehtinyt suojapaikkaan ajoissa.")
             break
 
@@ -150,7 +156,8 @@ def peli():
 
         print(f"\nLennät lentokentälle {valittu_lentokentta[1]} ({valittu_lentokentta[2]}).")
         print(f"Etäisyys: {etaisyys_uuteen:.2f} km, Lentoaika: {tunnit} tuntia ja {minuutit} minuuttia.")
-        print(f"Aikaa jäljellä: {remaining_time // 60}")
+        print(f"Aikaa jäljellä: {remaining_time // 60} tuntia ja {remaining_time % 60} minuuttia.")
+        print(f"Kilometrejä jäljellä: {kilsat_pelaaja:.2f} km.\n")
 peli()
 
 #Sijainti
@@ -253,3 +260,6 @@ def sijainti(kilsat_pelaaja, icao, aika, game_id):
     sql = f'''UPDATE game SET location = %s, kilsat_pelaaja = %s, aika = %s WHERE id = %s'''
     cursor = connection.cursor(dictionary=True)
     cursor.execute(sql, (kilsat_pelaaja, icao, aika, game_id))
+
+
+
