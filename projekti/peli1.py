@@ -100,7 +100,7 @@ def get_nearby_airports(lentokentat, current="EFHK", visited_airports=[]):
     if current_lat is None or current_lng is None:
         raise ValueError("Nykyistä lentokenttää ei löytynyt.")
 
-    print(f"Nykyinen sijaintisi: {current_name} ({current}), koordinaatit: {current_lat}, {current_lng}")
+    print(f"\nNykyinen sijaintisi: {current_name}")
 
     etaisyydet = []
     # Laske etäisyydet muihin lentokenttiin, jotka eivät ole käytyjä
@@ -130,7 +130,7 @@ def paivita_sijainti(valittu_lentokentta, etaisyys_uuteen, pelaajan_sijainti, ki
     pelaajan_aika -= lentoaika_min
 
     print(
-        f"Uusi sijaintisi on {pelaajan_sijainti}. Jäljellä olevat kilometrit: {kilsat_pelaaja:.2f} km, jäljellä oleva aika: {pelaajan_aika // 60:.0f} tuntia ja {pelaajan_aika % 60:.0f} minuuttia.")
+        f"\nJäljellä olevat kilometrit: {kilsat_pelaaja:.2f} km; \nJäljellä oleva aika: {pelaajan_aika // 60:.0f} tuntia ja {pelaajan_aika % 60:.0f} minuuttia.")
 
     return pelaajan_sijainti, kilsat_pelaaja, pelaajan_aika
 
@@ -162,7 +162,7 @@ def peli_kaynnista(connection):
 
         print("\nLähimmät lentokenttävaihtoehdot:")
         for i, airport in enumerate(nearest_airports):
-            print(f"{i + 1}. Lentokenttä: {airport[1]} ({airport[2]}), Etäisyys: {airport[0]:.2f} km")
+            print(f"{i + 1}. Lentokenttä: {airport[1]}, Etäisyys: {airport[0]:.2f} km")
 
         # Pelaaja valitsee uuden lentokentän
         try:
@@ -208,3 +208,5 @@ if __name__ == "__main__":
         show_story()
 
     peli_kaynnista(connection)
+    
+    
