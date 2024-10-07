@@ -10,7 +10,7 @@ def create_database_connection():
         port=3306,
         database='flight_game',
         user='root',
-        password='salasana',
+        password='kisumisu24',
         autocommit=True,
         collation='utf8mb4_general_ci'
     )
@@ -18,7 +18,7 @@ def create_database_connection():
 
 # Funktio tarinan näyttämiseksi
 def show_story():
-    print("""
+    print("""\
     *** Tervetuloa peliin! ***
 
     Aurinko on räjähtämässä, ja sen myötä maapallon ilmasto on alkanut kuumentua äärimmilleen. 
@@ -100,7 +100,6 @@ def get_nearby_airports(lentokentat, current="EFHK", visited_airports=[]):
     if current_lat is None or current_lng is None:
         raise ValueError("Nykyistä lentokenttää ei löytynyt.")
 
-    print(f"Nykyinen sijaintisi: {current_name} ({current}), koordinaatit: {current_lat}, {current_lng}")
 
     etaisyydet = []
     # Laske etäisyydet muihin lentokenttiin, jotka eivät ole käytyjä
@@ -130,7 +129,7 @@ def paivita_sijainti(valittu_lentokentta, etaisyys_uuteen, pelaajan_sijainti, ki
     pelaajan_aika -= lentoaika_min
 
     print(
-        f"Uusi sijaintisi on {pelaajan_sijainti}. Jäljellä olevat kilometrit: {kilsat_pelaaja:.2f} km, jäljellä oleva aika: {pelaajan_aika // 60:.0f} tuntia ja {pelaajan_aika % 60:.0f} minuuttia.")
+        f"\nJäljellä olevat kilometrit: {kilsat_pelaaja:.2f} km; \nJäljellä oleva aika: {pelaajan_aika // 60:.0f} tuntia ja {pelaajan_aika % 60:.0f} minuuttia.")
 
     return pelaajan_sijainti, kilsat_pelaaja, pelaajan_aika
 
@@ -149,10 +148,14 @@ def peli_kaynnista(connection):
     # Lentokenttätietojen haku
     lentokentat = get_airport_info(connection)
 
+    # Tulostetaan pelaajan aloitussijainti, käytettävä etäisyys ja aika
+    print(f"\nAloitus sijainti: Helsinki-Vantaa")
+    print(f"Pelaajalla on kilometrejä: {kilsat_pelaaja:.2f} km")
+    print(f"Pelaajalla on aikaa: {pelaajan_aika // 60:.0f} tuntia.\n")
+
     while kilsat_pelaaja > 0 and pelaajan_aika > 0:
         # Tulostetaan oma sijainti ja viisi lähintä lentokenttää
-        nearest_airports = get_nearby_airports(lentokentat, current=pelaajan_sijainti,
-                                               visited_airports=visited_airports)
+        nearest_airports = get_nearby_airports(lentokentat, current=pelaajan_sijainti, visited_airports=visited_airports)
 
         # Tarkista, onko pelaajalla riittävästi polttoainetta lentää mihinkään lentokenttään
         if all(airport[0] > kilsat_pelaaja for airport in nearest_airports):
@@ -162,7 +165,7 @@ def peli_kaynnista(connection):
 
         print("\nLähimmät lentokenttävaihtoehdot:")
         for i, airport in enumerate(nearest_airports):
-            print(f"{i + 1}. Lentokenttä: {airport[1]} ({airport[2]}), Etäisyys: {airport[0]:.2f} km")
+            print(f"{i + 1}. Lentokenttä: {airport[1]}, Etäisyys: {airport[0]:.2f} km")
 
         # Pelaaja valitsee uuden lentokentän
         try:
@@ -204,7 +207,13 @@ if __name__ == "__main__":
 
     # Kysy pelaajalta, haluaako hän lukea tarinan
     haluaako_lukea = input("Haluatko lukea tarinan ennen peliä? (Kyllä/Ei): ").strip().lower()
-    if haluaako_lukea == "kyllä" or haluaako_lukea == "kyllä":
+    if haluaako_lukea == "kyllä":
         show_story()
+    elif haluaako_lukea == "ei":
+        print("Hyvä on, hypätään suoraan toimintaan!")
+    else:
+        print("Virheellinen syöte. Aloitetaan peli ilman tarinaa")
 
     peli_kaynnista(connection)
+    
+    
