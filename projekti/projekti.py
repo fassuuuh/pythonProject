@@ -33,13 +33,16 @@ def show_story():
 
 # Funktio, joka kysyy pelaajalta haluaako hän lukea tarinan
 def ask_for_story():
-    choice = input("Haluatko lukea tarinan? (kyllä/ei): ").strip().lower()
-    if choice == 'kyllä':
-        show_story()
-    elif choice == 'ei':
-        print("Hyvä on, hypätään suoraan toimintaan!")
-    else:
-        print("Virheellinen valinta. Kirjoita 'kyllä' tai 'ei'.")
+    while True:
+        choice = input("Haluatko lukea tarinan? (kyllä/ei): ").strip().lower()
+        if choice == 'kyllä':
+            show_story()
+            break
+        elif choice == 'ei':
+            print("Hyvä on, hypätään suoraan toimintaan!")
+            break
+        else:
+            print("Virheellinen valinta. Kirjoita 'kyllä' tai 'ei'.")
 
 # Kysytään pelaajalta haluaako tarinan
 ask_for_story()
@@ -64,8 +67,14 @@ def get_airport_info():
 def etaisyyden_lasku(start_coords, end_coords):
     return distance.distance(start_coords, end_coords).km
 
+# Satunnaisen maalikentän valinta
+def maali_lentokentat():
+    lentokentat = ['EFIV', 'EFOU', 'EFKS', 'EFKT', 'EFKE']
+    valittu_kentta = random.choice(lentokentat)
+    return valittu_kentta
+
 # Tarjoa viisi lähintä lentokenttää
-def get_nearby_airports(lentokentat, current, visited):
+def get_nearby_airports(lentokentat, current, visited, remaining_time, kilsat_pelaaja):
     current_lat, current_lng = None, None
 
     # Etsi nykyisen lentokentän koordinaatit
@@ -95,7 +104,11 @@ def get_nearby_airports(lentokentat, current, visited):
             continue
 
         etaisyys = etaisyyden_lasku((current_lat, current_lng), (lat, lng))
-        etaisyydet.append((etaisyys, name, ident))
+        tunnit, minuutit = lentoaika(etaisyys)
+        matka_aika = tunnit * 60 + minuutit
+
+        if matka_aika <= remaining_time and etaisyys <= kilsat_pelaaja:
+            etaisyydet.append((etaisyys, name, ident, matka_aika))
 
     # Järjestetään etäisyydet etäisyyden mukaan nousevasti
     etaisyydet.sort(key=lambda x: x[0])
@@ -103,17 +116,25 @@ def get_nearby_airports(lentokentat, current, visited):
     # Palautetaan viisi lähintä lentokenttää
     return etaisyydet[:5]
 
+
 # Pääpelisilmukka
 def peli():
     lentokentat = get_airport_info()
     current_airport = "EFHK"  # Aloituskenttä
     visited_airports = [current_airport]  # Lista käydyistä lentokentistä
     remaining_time = 5 * 60  # Aika minuuteissa (5 tuntia)
-    kilsat_pelaaja = 1500
+    kilsat_pelaaja = 2000
+    maali = maali_lentokentat()
 
-    while remaining_time > 0:
+    print(f"Tehtäväsi on löytää salainen bunkkeri lentokentältä {maali}. Etsi se ennen kuin aika tai polttoaine loppuu!")
+
+    while remaining_time > 0 and kilsat_pelaaja > 0:
         # Näytetään pelaajalle viisi lähintä lentokenttää
-        nearby_airports = get_nearby_airports(lentokentat, current_airport, visited_airports)
+        nearby_airports = get_nearby_airports(lentokentat, current_airport, visited_airports, remaining_time, kilsat_pelaaja)
+
+        if not nearby_airports:
+            print("Ei ole enään lentokenttiä joihin voit lentää\nPeli päättyi!")
+            break
 
         print("\nLähimmät lentokenttävaihtoehdot:")
         for i, airport in enumerate(nearby_airports):
@@ -133,6 +154,7 @@ def peli():
         # Valittu lentokenttä
         valittu_lentokentta = nearby_airports[valinta]
         etaisyys_uuteen = valittu_lentokentta[0]
+        matka_aika = valittu_lentokentta[3]
 
         # Lasketaan lentoaika
         tunnit, minuutit = lentoaika(etaisyys_uuteen)
@@ -147,7 +169,7 @@ def peli():
             break
 
         if kilsat_pelaaja <= 0:
-            print("Aika loppui! Et ehtinyt suojapaikkaan ajoissa.")
+            print("Kilometrit loppuivat! Et ehtinyt suojapaikkaan ajoissa.")
             break
 
         # Päivitetään pelaajan sijainti ja käydyt lentokentät
@@ -158,7 +180,14 @@ def peli():
         print(f"Etäisyys: {etaisyys_uuteen:.2f} km, Lentoaika: {tunnit} tuntia ja {minuutit} minuuttia.")
         print(f"Aikaa jäljellä: {remaining_time // 60} tuntia ja {remaining_time % 60} minuuttia.")
         print(f"Kilometrejä jäljellä: {kilsat_pelaaja:.2f} km.\n")
+
+        # Tarkistetaan, onko pelaaja saapunut maalikenttään
+        if current_airport == maali:
+            print(f"Onneksi olkoon! Saavuit maalikentälle {maali}. Voitit pelin ja löysit suojapaikan!")
+            break
+
 peli()
+
 
 #Sijainti
 def lentokenttien_sijainti(icao_code):
@@ -170,11 +199,6 @@ def lentokenttien_sijainti(icao_code):
         return {'latitude_deg': result[0], 'longitude_deg': result[1]}
     else:
         return None
-#maali lentokentät
-def maali_lentokentat():
-    lentokentat = ['EFIV', 'EFOU', 'EFKS', 'EFKT', 'EFKE']
-    valittu_kentta = random.choice(lentokentat)
-    return valittu_kentta
 
 def airport_select():
     sql = """SELECT iso_country, ident, name, latitude_deg, longitude_deg
@@ -198,68 +222,7 @@ def alku():
 aloitus = alku()
 
 
-
-
 def sijainti(kilsat_pelaaja, icao, aika, game_id):
     sql = f'''UPDATE game SET location = %s, kilsat_pelaaja = %s, aika = %s WHERE id = %s'''
     cursor = connection.cursor(dictionary=True)
     cursor.execute(sql, (kilsat_pelaaja, icao, aika, game_id))
-
-
-
-def lahikentat(icao, a_ports, kilsat_pelaaja):
-    lahel = []
-    for a_port in a_ports:
-        pituus = etaisyyden_lasku(icao, a_port['ident'])
-        if pituus <= kilsat_pelaaja and pituus > 0:
-            lahel.append({'airport': a_port, 'distance': pituus})
-    lahel = sorted(lahel, key=lambda x: x['distance'])
-    return lahel[:3]
-
-#Sijainti
-def lentokenttien_sijainti(icao_code):
-    sql = f"SELECT lantitude_deg, longitude_deg FROM airport WHERE ident = '{icao_code}'"
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    if result:
-        return {'lantitude_deg': result[0], 'longitude_deg': result[1]}
-    else:
-        return None
-#maali lentokentät
-def maali_lentokentat():
-    lentokentat = ['EFIV', 'EFOU', 'EFKS', 'EFKT', 'EFKE']
-    valittu_kentta = random.choice(lentokentat)
-    return
-
-def airport_select():
-    sql = """SELECT iso_country, ident, name, latitude_deg, longitude_deg
-    FROM airport
-    WHERE iso_country='FI'
-    AND type IN ('medium_airport', 'large_airport')
-    ORDER by RAND()
-    ;"""
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    return result
-
-
-kilsat_pelaaja = 1500
-
-
-def alku():
-    lentokent = "EFHK"
-    return lentokent
-aloitus = alku()
-
-
-
-
-def sijainti(kilsat_pelaaja, icao, aika, game_id):
-    sql = f'''UPDATE game SET location = %s, kilsat_pelaaja = %s, aika = %s WHERE id = %s'''
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute(sql, (kilsat_pelaaja, icao, aika, game_id))
-
-
-
