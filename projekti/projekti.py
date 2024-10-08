@@ -49,7 +49,7 @@ ask_for_story()
 
 # Lentoaika laskeminen
 def lentoaika(etaisyys_km):
-    vakioaika_100_km = 12
+    vakioaika_100_km = 20
     lentoaika_minuutit = (etaisyys_km / 100) * vakioaika_100_km
     tunnit = int(lentoaika_minuutit // 60)
     minuutit = int(lentoaika_minuutit % 60)
@@ -89,7 +89,7 @@ def get_nearby_airports(lentokentat, current, visited, remaining_time, kilsat_pe
         raise ValueError("Nykyistä lentokenttää ei löytynyt.")
 
     # Tulostetaan pelaajan nykyinen sijainti
-    print(f"Nykyinen sijaintisi: {current_name} ({current}), koordinaatit: {current_lat}, {current_lng}")
+    print(f"Nykyinen sijaintisi: {current_name}")
 
     etaisyydet = []
     # Laske etäisyydet muihin lentokenttiin, paitsi jo käydyt kentät
@@ -126,7 +126,7 @@ def peli():
     kilsat_pelaaja = 2000
     maali = maali_lentokentat()
 
-    print(f"Tehtäväsi on löytää salainen bunkkeri lentokentältä {maali}. Etsi se ennen kuin aika tai polttoaine loppuu!")
+    print(f"\nTehtäväsi on löytää salainen bunkkeri lentokentältä Suomessa. Etsi se ennen kuin aika tai polttoaine loppuu!")
 
     while remaining_time > 0 and kilsat_pelaaja > 0:
         # Näytetään pelaajalle viisi lähintä lentokenttää
@@ -138,16 +138,16 @@ def peli():
 
         print("\nLähimmät lentokenttävaihtoehdot:")
         for i, airport in enumerate(nearby_airports):
-            print(f"{i + 1}. Lentokenttä: {airport[1]} ({airport[2]}), Etäisyys: {airport[0]:.2f} km")
+            print(f"{i + 1}. Lentokenttä: {airport[1]}, etäisyys: {airport[0]:.0f} km")
 
         # Pelaajan valinta (tarkistetaan, että syöte on numero ja sallituissa rajoissa)
         while True:
             try:
-                valinta = int(input("Valitse lentokenttä minne haluat lentää (1-5): ")) - 1
+                valinta = int(input(f"Valitse lentokenttä minne haluat lentää (1-{i + 1}): ")) - 1
                 if 0 <= valinta < len(nearby_airports):
                     break
                 else:
-                    print("Virheellinen valinta, valitse 1-5.")
+                    print(f"Virheellinen valinta, valitse 1-{i + 1}.")
             except ValueError:
                 print("Syötä numero 1-5.")
 
@@ -176,10 +176,9 @@ def peli():
         current_airport = valittu_lentokentta[2]
         visited_airports.append(current_airport)
 
-        print(f"\nLennät lentokentälle {valittu_lentokentta[1]} ({valittu_lentokentta[2]}).")
-        print(f"Etäisyys: {etaisyys_uuteen:.2f} km, Lentoaika: {tunnit} tuntia ja {minuutit} minuuttia.")
-        print(f"Aikaa jäljellä: {remaining_time // 60} tuntia ja {remaining_time % 60} minuuttia.")
-        print(f"Kilometrejä jäljellä: {kilsat_pelaaja:.2f} km.\n")
+        print(f"\nLennät lentokentälle {valittu_lentokentta[1]}, lentoaika: {tunnit} tuntia ja {minuutit} minuuttia.")
+        print(f"\nAikaa jäljellä: {remaining_time // 60} tuntia ja {remaining_time % 60} minuuttia.")
+        print(f"Kilometrejä jäljellä: {kilsat_pelaaja:.2f} km.")
 
         # Tarkistetaan, onko pelaaja saapunut maalikenttään
         if current_airport == maali:
@@ -226,3 +225,11 @@ def sijainti(kilsat_pelaaja, icao, aika, game_id):
     sql = f'''UPDATE game SET location = %s, kilsat_pelaaja = %s, aika = %s WHERE id = %s'''
     cursor = connection.cursor(dictionary=True)
     cursor.execute(sql, (kilsat_pelaaja, icao, aika, game_id))
+    
+
+
+def sijainti(kilsat_pelaaja, icao, aika, game_id):
+    sql = f'''UPDATE game SET location = %s, kilsat_pelaaja = %s, aika = %s WHERE id = %s'''
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute(sql, (kilsat_pelaaja, icao, aika, game_id))
+
