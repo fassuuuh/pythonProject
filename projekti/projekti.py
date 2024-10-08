@@ -124,10 +124,6 @@ def peli_normal():
         nearby_airports = get_nearby_airports(lentokentat, current_airport, visited_airports, remaining_time,
                                               kilsat_pelaaja)
 
-        if not nearby_airports:
-            print("Aika tai polttoaine loppui! Menehdyit auringon räjähdyksen aiheuttamaan kuumuuteen.\nPeli päättyy!")
-            break
-
         print("\nLähimmät lentokenttävaihtoehdot:")
         for i, airport in enumerate(nearby_airports):
             print(f"{i + 1}. Lentokenttä: {airport[1]}, Etäisyys: {airport[0]:.0f} km")
@@ -156,11 +152,11 @@ def peli_normal():
         remaining_time -= matka_aika
         kilsat_pelaaja -= etaisyys_uuteen
 
-        if remaining_time <= 0:
+        if matka_aika > remaining_time:
             print("Aika loppui! Et ehtinyt suojapaikkaan ajoissa.")
             break
 
-        if kilsat_pelaaja <= 0:
+        if etaisyys_uuteen > kilsat_pelaaja:
             print("Kilometrit loppuivat! Et ehtinyt suojapaikkaan ajoissa.")
             break
 
@@ -197,10 +193,6 @@ def peli_easy():
         nearby_airports = get_nearby_airports(lentokentat, current_airport, visited_airports, remaining_time,
                                               kilsat_pelaaja)
 
-        if not nearby_airports:
-            print("Aika tai polttoaine loppui! Menehdyit auringon räjähdyksen aiheuttamaan kuumuuteen.\nPeli päättyy!")
-            break
-
         print("\nLähimmät lentokenttävaihtoehdot:")
         for i, airport in enumerate(nearby_airports):
             print(f"{i + 1}. Lentokenttä: {airport[1]}, Etäisyys: {airport[0]:.0f} km")
@@ -229,11 +221,11 @@ def peli_easy():
         remaining_time -= matka_aika
         kilsat_pelaaja -= etaisyys_uuteen
 
-        if remaining_time <= 0:
+        if matka_aika > remaining_time:
             print("Aika loppui! Et ehtinyt suojapaikkaan ajoissa.")
             break
 
-        if kilsat_pelaaja <= 0:
+        if etaisyys_uuteen > kilsat_pelaaja:
             print("Kilometrit loppuivat! Et ehtinyt suojapaikkaan ajoissa.")
             break
 
@@ -271,10 +263,6 @@ def peli_hard():
         nearby_airports = get_nearby_airports(lentokentat, current_airport, visited_airports, remaining_time,
                                               kilsat_pelaaja)
 
-        if not nearby_airports:
-            print("Aika tai polttoaine loppui! Menehdyit auringon räjähdyksen aiheuttamaan kuumuuteen. \nPeli päättyy!")
-            break
-
         print("\nLähimmät lentokenttävaihtoehdot:")
         for i, airport in enumerate(nearby_airports):
             print(f"{i + 1}. Lentokenttä: {airport[1]}, Etäisyys: {airport[0]:.0f} km")
@@ -303,11 +291,11 @@ def peli_hard():
         remaining_time -= matka_aika
         kilsat_pelaaja -= etaisyys_uuteen
 
-        if remaining_time <= 0:
+        if matka_aika > remaining_time:
             print("Aika loppui! Et ehtinyt suojapaikkaan ajoissa.")
             break
 
-        if kilsat_pelaaja <= 0:
+        if etaisyys_uuteen > kilsat_pelaaja:
             print("Kilometrit loppuivat! Et ehtinyt suojapaikkaan ajoissa.")
             break
 
