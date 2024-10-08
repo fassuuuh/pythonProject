@@ -178,7 +178,7 @@ def peli():
 
         print(f"\nLennät lentokentälle {valittu_lentokentta[1]}, lentoaika: {tunnit} tuntia ja {minuutit} minuuttia.")
         print(f"\nAikaa jäljellä: {remaining_time // 60} tuntia ja {remaining_time % 60} minuuttia.")
-        print(f"Kilometrejä jäljellä: {kilsat_pelaaja:.2f} km.")
+        print(f"Kilometrejä jäljellä: {kilsat_pelaaja:.0f} km.")
 
         # Tarkistetaan, onko pelaaja saapunut maalikenttään
         if current_airport == maali:
@@ -186,50 +186,3 @@ def peli():
             break
 
 peli()
-
-
-#Sijainti
-def lentokenttien_sijainti(icao_code):
-    sql = f"SELECT latitude_deg, longitude_deg FROM airport WHERE ident = '{icao_code}'"
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    if result:
-        return {'latitude_deg': result[0], 'longitude_deg': result[1]}
-    else:
-        return None
-
-def airport_select():
-    sql = """SELECT iso_country, ident, name, latitude_deg, longitude_deg
-    FROM airport
-    WHERE iso_country='FI'
-    AND type IN ('medium_airport', 'large_airport')
-    ORDER by RAND()
-    ;"""
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    return result
-
-
-kilsat_pelaaja = 1500
-
-
-def alku():
-    lentokent = "EFHK"
-    return lentokent
-aloitus = alku()
-
-
-def sijainti(kilsat_pelaaja, icao, aika, game_id):
-    sql = f'''UPDATE game SET location = %s, kilsat_pelaaja = %s, aika = %s WHERE id = %s'''
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute(sql, (kilsat_pelaaja, icao, aika, game_id))
-    
-
-
-def sijainti(kilsat_pelaaja, icao, aika, game_id):
-    sql = f'''UPDATE game SET location = %s, kilsat_pelaaja = %s, aika = %s WHERE id = %s'''
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute(sql, (kilsat_pelaaja, icao, aika, game_id))
-
