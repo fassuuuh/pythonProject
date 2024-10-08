@@ -1,6 +1,7 @@
 from geopy import distance
 import mysql.connector
 import random
+import pyfiglet
 
 connection = mysql.connector.connect(
     host='127.0.0.1',
@@ -12,10 +13,15 @@ connection = mysql.connector.connect(
     collation='utf8mb4_general_ci'
 )
 
+text = "Solar Escape"
+large_text = pyfiglet.figlet_format(text)
+width = 150
+for line in large_text.splitlines():
+    print(line.center(width))
 
 def show_story():
     story = """
-    *** Tervetuloa peliin! ***
+    *** Tervetuloa Solar Escape -peliin! ***
 
     Aurinko on räjähtämässä, ja sen myötä maapallon ilmasto on alkanut kuumentua äärimmilleen. 
     Maailma on joutunut kaaokseen. Ihmiskunta kamppailee selviytymisestään.
@@ -29,7 +35,7 @@ def show_story():
     Onnea matkaan, seikkailijamme. Selviytyminen on omissa käsissäsi!
     """
     while True:
-        choice = input("Haluatko lukea tarinan? (kyllä/ei): ").strip().lower()
+        choice = input("\nHaluatko lukea tarinan? (kyllä/ei): ").strip().lower()
         if choice == 'kyllä':
             print(story)
             break
@@ -114,7 +120,7 @@ def peli_normal():
     maali = maali_lentokentat()
 
     print(
-        f"\nTehtäväsi on löytää salainen bunkkeri lentokentältä Suomen pohjois-osista. Etsi se ennen kuin aika tai polttoaine loppuu!")
+        f"\nTervetuloa Solar Escape -peliin! Tehtäväsi on löytää salainen bunkkeri lentokentältä Suomen pohjois-osista.\nEtsi se ennen kuin aika tai polttoaine loppuu!\n")
     print(f"Nykyinen sijaintisi: Helsinki-Vantaa Airport")
     print(f"Pelaajalla on kilometrejä: {kilsat_pelaaja} km")
     print(f"Pelaajalla on aikaa: {remaining_time // 60:.0f} tuntia")
@@ -123,6 +129,10 @@ def peli_normal():
         # Näytetään pelaajalle viisi lähintä lentokenttää
         nearby_airports = get_nearby_airports(lentokentat, current_airport, visited_airports, remaining_time,
                                               kilsat_pelaaja)
+
+        if not nearby_airports:
+            print("Aika tai polttoaine loppui! Menehdyit auringon räjähdyksen aiheuttamaan kuumuuteen.\nPeli päättyy!")
+            break
 
         print("\nLähimmät lentokenttävaihtoehdot:")
         for i, airport in enumerate(nearby_airports):
@@ -152,11 +162,11 @@ def peli_normal():
         remaining_time -= matka_aika
         kilsat_pelaaja -= etaisyys_uuteen
 
-        if matka_aika > remaining_time:
+        if remaining_time <= 0:
             print("Aika loppui! Et ehtinyt suojapaikkaan ajoissa.")
             break
 
-        if etaisyys_uuteen > kilsat_pelaaja:
+        if kilsat_pelaaja <= 0:
             print("Kilometrit loppuivat! Et ehtinyt suojapaikkaan ajoissa.")
             break
 
@@ -183,7 +193,7 @@ def peli_easy():
     maali = maali_lentokentat()
 
     print(
-        f"\nTehtäväsi on löytää salainen bunkkeri lentokentältä Suomen pohjois-osista. Etsi se ennen kuin aika tai polttoaine loppuu!")
+        f"\nTervetuloa Solar Escape -peliin! Tehtäväsi on löytää salainen bunkkeri lentokentältä Suomen pohjois-osista. \nEtsi se ennen kuin aika tai polttoaine loppuu!\n")
     print(f"Nykyinen sijaintisi: Helsinki-Vantaa Airport")
     print(f"Pelaajalla on kilometrejä: {kilsat_pelaaja} km")
     print(f"Pelaajalla on aikaa: {remaining_time // 60:.0f} tuntia")
@@ -192,6 +202,10 @@ def peli_easy():
         # Näytetään pelaajalle viisi lähintä lentokenttää
         nearby_airports = get_nearby_airports(lentokentat, current_airport, visited_airports, remaining_time,
                                               kilsat_pelaaja)
+
+        if not nearby_airports:
+            print("Aika tai polttoaine loppui! Menehdyit auringon räjähdyksen aiheuttamaan kuumuuteen.\nPeli päättyy!")
+            break
 
         print("\nLähimmät lentokenttävaihtoehdot:")
         for i, airport in enumerate(nearby_airports):
@@ -221,11 +235,11 @@ def peli_easy():
         remaining_time -= matka_aika
         kilsat_pelaaja -= etaisyys_uuteen
 
-        if matka_aika > remaining_time:
+        if remaining_time <= 0:
             print("Aika loppui! Et ehtinyt suojapaikkaan ajoissa.")
             break
 
-        if etaisyys_uuteen > kilsat_pelaaja:
+        if kilsat_pelaaja <= 0:
             print("Kilometrit loppuivat! Et ehtinyt suojapaikkaan ajoissa.")
             break
 
@@ -253,7 +267,7 @@ def peli_hard():
     maali = maali_lentokentat()
 
     print(
-        f"\nTehtäväsi on löytää salainen bunkkeri lentokentältä Suomen pohjois-osista. Etsi se ennen kuin aika tai polttoaine loppuu!")
+        f"\nTervetuloa Solar Escape -peliin! Tehtäväsi on löytää salainen bunkkeri lentokentältä Suomen pohjois-osista. \nEtsi se ennen kuin aika tai polttoaine loppuu!\n")
     print(f"Nykyinen sijaintisi: Helsinki-Vantaa Airport")
     print(f"Pelaajalla on kilometrejä: {kilsat_pelaaja} km")
     print(f"Pelaajalla on aikaa: {remaining_time // 60:.0f} tuntia")
@@ -262,6 +276,10 @@ def peli_hard():
         # Näytetään pelaajalle viisi lähintä lentokenttää
         nearby_airports = get_nearby_airports(lentokentat, current_airport, visited_airports, remaining_time,
                                               kilsat_pelaaja)
+
+        if not nearby_airports:
+            print("Aika tai polttoaine loppui! Menehdyit auringon räjähdyksen aiheuttamaan kuumuuteen. \nPeli päättyy!")
+            break
 
         print("\nLähimmät lentokenttävaihtoehdot:")
         for i, airport in enumerate(nearby_airports):
@@ -291,11 +309,11 @@ def peli_hard():
         remaining_time -= matka_aika
         kilsat_pelaaja -= etaisyys_uuteen
 
-        if matka_aika > remaining_time:
+        if remaining_time <= 0:
             print("Aika loppui! Et ehtinyt suojapaikkaan ajoissa.")
             break
 
-        if etaisyys_uuteen > kilsat_pelaaja:
+        if kilsat_pelaaja <= 0:
             print("Kilometrit loppuivat! Et ehtinyt suojapaikkaan ajoissa.")
             break
 
@@ -332,4 +350,4 @@ def ask_for_gamemode():
 
 ask_for_gamemode()
 
-# Faiza. viimeisin versio parannettu
+# Faiza. viimeisin versio parannettu, lisätty Solar Escape
