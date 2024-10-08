@@ -10,10 +10,9 @@ connection = mysql.connector.connect(
     user='root',
     password='salasana',
     autocommit=True,
-    collation='utf8mb4_general_ci'
-)
+    collation='utf8mb4_general_ci')
 
-text = "Solar Escape"
+text = "\nSolar Escape"
 large_text = pyfiglet.figlet_format(text)
 width = 150
 for line in large_text.splitlines():
@@ -131,7 +130,7 @@ def peli_normal():
                                               kilsat_pelaaja)
 
         if not nearby_airports:
-            print("Aika tai polttoaine loppui! Menehdyit auringon räjähdyksen aiheuttamaan kuumuuteen.\nPeli päättyy!")
+            print("Et pääse mihinkään lentokenttään! Menehdyit auringon räjähdyksen aiheuttamaan kuumuuteen.\nPeli päättyy!")
             break
 
         print("\nLähimmät lentokenttävaihtoehdot:")
@@ -204,7 +203,7 @@ def peli_easy():
                                               kilsat_pelaaja)
 
         if not nearby_airports:
-            print("Aika tai polttoaine loppui! Menehdyit auringon räjähdyksen aiheuttamaan kuumuuteen.\nPeli päättyy!")
+            print("Et pääse mihinkään lentokenttään! Menehdyit auringon räjähdyksen aiheuttamaan kuumuuteen.\nPeli päättyy!")
             break
 
         print("\nLähimmät lentokenttävaihtoehdot:")
@@ -278,7 +277,7 @@ def peli_hard():
                                               kilsat_pelaaja)
 
         if not nearby_airports:
-            print("Aika tai polttoaine loppui! Menehdyit auringon räjähdyksen aiheuttamaan kuumuuteen. \nPeli päättyy!")
+            print("Et pääse mihinkään lentokenttään! Menehdyit auringon räjähdyksen aiheuttamaan kuumuuteen. \nPeli päättyy!")
             break
 
         print("\nLähimmät lentokenttävaihtoehdot:")
@@ -350,4 +349,4 @@ def ask_for_gamemode():
 
 ask_for_gamemode()
 
-# Faiza. viimeisin versio parannettu, lisätty Solar Escape
+# Viimeisin versio!
