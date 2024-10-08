@@ -49,7 +49,7 @@ ask_for_story()
 
 # Lentoaika laskeminen
 def lentoaika(etaisyys_km):
-    vakioaika_100_km = 20
+    vakioaika_100_km = 15
     lentoaika_minuutit = (etaisyys_km / 100) * vakioaika_100_km
     tunnit = int(lentoaika_minuutit // 60)
     minuutit = int(lentoaika_minuutit % 60)
@@ -133,7 +133,7 @@ def peli():
         nearby_airports = get_nearby_airports(lentokentat, current_airport, visited_airports, remaining_time, kilsat_pelaaja)
 
         if not nearby_airports:
-            print("Ei ole enään lentokenttiä joihin voit lentää\nPeli päättyi!")
+            print("Aika tai polttoaine loppui! Menehdyit auringon räjähdyksen aiheuttamaan kuumuuteen. \nPeli päättyi!")
             break
 
         print("\nLähimmät lentokenttävaihtoehdot:")
@@ -176,13 +176,13 @@ def peli():
         current_airport = valittu_lentokentta[2]
         visited_airports.append(current_airport)
 
-        print(f"\nLennät lentokentälle {valittu_lentokentta[1]}, lentoaika: {tunnit} tuntia ja {minuutit} minuuttia.")
-        print(f"\nAikaa jäljellä: {remaining_time // 60} tuntia ja {remaining_time % 60} minuuttia.")
-        print(f"Kilometrejä jäljellä: {kilsat_pelaaja:.0f} km.")
+        print(f"\nLennät lentokentälle {valittu_lentokentta[1]}, lentoaika: {tunnit} tuntia ja {minuutit} minuuttia")
+        print(f"\nAikaa jäljellä: {remaining_time // 60} tuntia ja {remaining_time % 60} minuuttia")
+        print(f"Kilometrejä jäljellä: {kilsat_pelaaja:.0f} km")
 
         # Tarkistetaan, onko pelaaja saapunut maalikenttään
         if current_airport == maali:
-            print(f"Onneksi olkoon! Saavuit maalikentälle {maali}. Voitit pelin ja löysit suojapaikan!")
+            print(f"Onneksi olkoon! Saavuit lentokentälle {valittu_lentokentta[1]}. Löysit turvapaikan sieltä ja voitit pelin!")
             break
 
 peli()
